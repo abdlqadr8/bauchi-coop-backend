@@ -5,6 +5,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import * as bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "@/prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -121,7 +122,7 @@ export class UsersService {
         password: hashedPassword,
         firstName: dto.firstName,
         lastName: dto.lastName,
-        role: dto.role || "USER",
+        role: (dto.role || "USER") as any,
       },
       select: {
         id: true,
@@ -175,7 +176,7 @@ export class UsersService {
         email: dto.email,
         firstName: dto.firstName,
         lastName: dto.lastName,
-        role: dto.role,
+        role: dto.role as any,
       },
       select: {
         id: true,
@@ -211,7 +212,7 @@ export class UsersService {
 
     const updated = await this.prisma.user.update({
       where: { id },
-      data: { status },
+      data: { status: status as any },
       select: {
         id: true,
         email: true,

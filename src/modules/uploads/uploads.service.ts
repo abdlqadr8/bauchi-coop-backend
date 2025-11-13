@@ -46,9 +46,7 @@ export class UploadsService {
     const uploadUrl = `https://s3-presigned.mock/${fileKey}?token=mock_token&expires=3600`;
     const fileUrl = `https://s3.mock/${fileKey}`;
 
-    this.logger.log(
-      `Presigned URL generated for: ${dto.filename}`,
-    );
+    this.logger.log(`Presigned URL generated for: ${dto.filename}`);
 
     return {
       uploadUrl,
