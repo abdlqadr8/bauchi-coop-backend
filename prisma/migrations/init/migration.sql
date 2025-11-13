@@ -22,7 +22,6 @@ CREATE TABLE "User" (
     "lastLogin" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
@@ -34,7 +33,6 @@ CREATE TABLE "RefreshToken" (
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "revokedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
 );
 
@@ -53,7 +51,6 @@ CREATE TABLE "Application" (
     "notes" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "Application_pkey" PRIMARY KEY ("id")
 );
 
@@ -66,7 +63,6 @@ CREATE TABLE "Document" (
     "documentType" TEXT NOT NULL,
     "uploadedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
 );
 
@@ -83,7 +79,6 @@ CREATE TABLE "Payment" (
     "rawPayload" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
 );
 
@@ -98,7 +93,6 @@ CREATE TABLE "Certificate" (
     "revocationReason" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "Certificate_pkey" PRIMARY KEY ("id")
 );
 
@@ -109,7 +103,6 @@ CREATE TABLE "Setting" (
     "value" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "Setting_pkey" PRIMARY KEY ("id")
 );
 
@@ -123,72 +116,77 @@ CREATE TABLE "ActivityLog" (
     "metadata" TEXT,
     "ipAddress" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "ActivityLog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "User" ("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
+CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken" ("token");
 
 -- CreateIndex
-CREATE INDEX "RefreshToken_userId_idx" ON "RefreshToken"("userId");
+CREATE INDEX "RefreshToken_userId_idx" ON "RefreshToken" ("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Application_registrationNumber_key" ON "Application"("registrationNumber");
+CREATE UNIQUE INDEX "Application_registrationNumber_key" ON "Application" ("registrationNumber");
 
 -- CreateIndex
-CREATE INDEX "Document_applicationId_idx" ON "Document"("applicationId");
+CREATE INDEX "Document_applicationId_idx" ON "Document" ("applicationId");
 
 -- CreateIndex
-CREATE INDEX "Payment_applicationId_idx" ON "Payment"("applicationId");
+CREATE INDEX "Payment_applicationId_idx" ON "Payment" ("applicationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Payment_transactionRef_key" ON "Payment"("transactionRef");
+CREATE UNIQUE INDEX "Payment_transactionRef_key" ON "Payment" ("transactionRef");
 
 -- CreateIndex
-CREATE INDEX "Payment_transactionRef_idx" ON "Payment"("transactionRef");
+CREATE INDEX "Payment_transactionRef_idx" ON "Payment" ("transactionRef");
 
 -- CreateIndex
-CREATE INDEX "Certificate_applicationId_idx" ON "Certificate"("applicationId");
+CREATE INDEX "Certificate_applicationId_idx" ON "Certificate" ("applicationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Certificate_registrationNo_key" ON "Certificate"("registrationNo");
+CREATE UNIQUE INDEX "Certificate_registrationNo_key" ON "Certificate" ("registrationNo");
 
 -- CreateIndex
-CREATE INDEX "Certificate_registrationNo_idx" ON "Certificate"("registrationNo");
+CREATE INDEX "Certificate_registrationNo_idx" ON "Certificate" ("registrationNo");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Setting_key_key" ON "Setting"("key");
+CREATE UNIQUE INDEX "Setting_key_key" ON "Setting" ("key");
 
 -- CreateIndex
-CREATE INDEX "ActivityLog_userId_idx" ON "ActivityLog"("userId");
+CREATE INDEX "ActivityLog_userId_idx" ON "ActivityLog" ("userId");
 
 -- CreateIndex
-CREATE INDEX "ActivityLog_applicationId_idx" ON "ActivityLog"("applicationId");
+CREATE INDEX "ActivityLog_applicationId_idx" ON "ActivityLog" ("applicationId");
 
 -- CreateIndex
-CREATE INDEX "ActivityLog_action_idx" ON "ActivityLog"("action");
+CREATE INDEX "ActivityLog_action_idx" ON "ActivityLog" ("action");
 
 -- CreateIndex
-CREATE INDEX "ActivityLog_createdAt_idx" ON "ActivityLog"("createdAt");
+CREATE INDEX "ActivityLog_createdAt_idx" ON "ActivityLog" ("createdAt");
 
 -- AddForeignKey
-ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "RefreshToken"
+ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Document"
+ADD CONSTRAINT "Document_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Payment"
+ADD CONSTRAINT "Payment_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificate" ADD CONSTRAINT "Certificate_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Certificate"
+ADD CONSTRAINT "Certificate_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ActivityLog"
+ADD CONSTRAINT "ActivityLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ActivityLog"
+ADD CONSTRAINT "ActivityLog_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Application" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
