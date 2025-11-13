@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 /**
  * Root application module.
@@ -33,6 +34,7 @@ import { ApplicationsModule } from './modules/applications/applications.module';
     AuthModule,
     UsersModule,
     ApplicationsModule,
+    PaymentsModule,
   ],
   controllers: [],
   providers: [],

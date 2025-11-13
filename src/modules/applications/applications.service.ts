@@ -51,7 +51,7 @@ export class ApplicationsService {
         }
 
         return app;
-      },
+      }
     );
 
     this.logger.log(
