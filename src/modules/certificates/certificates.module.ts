@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { CertificatesController } from './certificates.controller';
-import { CertificatesService } from './certificates.service';
-import { PrismaModule } from '@/prisma/prisma.module';
+import { Module } from "@nestjs/common";
+import { CertificatesController } from "./certificates.controller";
+import { CertificatesService } from "./certificates.service";
+import { PrismaModule } from "@/prisma/prisma.module";
 
 /**
  * Certificates Module

@@ -7,6 +7,9 @@ import { UsersModule } from './modules/users/users.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 /**
  * Root application module.
@@ -37,6 +40,9 @@ import { CertificatesModule } from './modules/certificates/certificates.module';
     ApplicationsModule,
     PaymentsModule,
     CertificatesModule,
+    SettingsModule,
+    DashboardModule,
+    ReportsModule,
   ],
   controllers: [],
   providers: [],
