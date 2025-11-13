@@ -1,8 +1,8 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
-import { PrismaService } from '@/prisma/prisma.service';
-import { PaymentWebhookDto } from './dto/payment-webhook.dto';
+import { Injectable, BadRequestException, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as crypto from "crypto";
+import { PrismaService } from "@/prisma/prisma.service";
+import { PaymentWebhookDto } from "./dto/payment-webhook.dto";
 
 /**
  * Payments Service
@@ -10,11 +10,11 @@ import { PaymentWebhookDto } from './dto/payment-webhook.dto';
  */
 @Injectable()
 export class PaymentsService {
-  private readonly logger = new Logger('PaymentsService');
+  private readonly logger = new Logger("PaymentsService");
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   /**
@@ -23,7 +23,7 @@ export class PaymentsService {
    */
   async handleWebhook(
     payload: PaymentWebhookDto,
-    signature: string,
+    signature: string
   ): Promise<{
     status: string;
     reference: string;
@@ -47,20 +47,20 @@ export class PaymentsService {
     if (existingPayment) {
       this.logger.warn(`Duplicate webhook received: ${payload.reference}`);
       return {
-        status: 'success',
+        status: "success",
         reference: payload.reference,
-        message: 'Webhook already processed',
+        message: "Webhook already processed",
       };
     }
 
     // Create payment record from webhook
     const payment = await this.prisma.payment.create({
       data: {
-        applicationId: payload.applicationId || '',
+        applicationId: payload.applicationId || "",
         amount: payload.amount,
-        currency: 'NGN',
-        status: payload.status === 'success' ? 'COMPLETED' : 'FAILED',
-        paymentMethod: 'PAYSTACK',
+        currency: "NGN",
+        status: payload.status === "success" ? "COMPLETED" : "FAILED",
+        paymentMethod: "PAYSTACK",
         transactionRef: payload.reference,
         paymentDate: new Date(),
         rawPayload: JSON.stringify(payload),
@@ -68,13 +68,13 @@ export class PaymentsService {
     });
 
     this.logger.log(
-      `Payment webhook processed: ${payment.id} (${payload.reference})`,
+      `Payment webhook processed: ${payment.id} (${payload.reference})`
     );
 
     return {
-      status: 'success',
+      status: "success",
       reference: payload.reference,
-      message: 'Payment recorded successfully',
+      message: "Payment recorded successfully",
     };
   }
 
@@ -84,7 +84,7 @@ export class PaymentsService {
   async findAll(
     skip: number = 0,
     take: number = 10,
-    status?: string,
+    status?: string
   ): Promise<{
     payments: Array<{
       id: string;
@@ -131,15 +131,15 @@ export class PaymentsService {
     pending: number;
   }> {
     const payments = await this.prisma.payment.aggregate({
-      where: { status: 'COMPLETED' },
+      where: { status: "COMPLETED" },
       _sum: { amount: true },
       _count: true,
     });
 
     const [completed, failed, pending] = await Promise.all([
-      this.prisma.payment.count({ where: { status: 'COMPLETED' } }),
-      this.prisma.payment.count({ where: { status: 'FAILED' } }),
-      this.prisma.payment.count({ where: { status: 'PENDING' } }),
+      this.prisma.payment.count({ where: { status: "COMPLETED" } }),
+      this.prisma.payment.count({ where: { status: "FAILED" } }),
+      this.prisma.payment.count({ where: { status: "PENDING" } }),
     ]);
 
     return {
