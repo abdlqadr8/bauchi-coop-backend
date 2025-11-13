@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User model - stores system users (admins, staff)
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String    // bcrypted
+  firstName     String
+  lastName      String
+  role          UserRole  @default(USER)
+  status        UserStatus @default(ACTIVE)
+  lastLogin     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  refreshTokens RefreshToken[]
+  activityLogs  ActivityLog[]
+}
+
+// Refresh token model - stores issued refresh tokens for rotation
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Application model - cooperative registration applications
+model Application {
+  id            String              @id @default(cuid())
+  cooperativeName String
+  registrationNumber String?         @unique
+  email         String
+  phone         String
+  address       String?
+  status        ApplicationStatus  @default(NEW)
+  submittedAt   DateTime           @default(now())
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  notes         String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  // Relations
+  documents     Document[]
+  payments      Payment[]
+  certificates  Certificate[]
+  activityLogs  ActivityLog[]
+}
+
+// Document model - stores file metadata for applications
+model Document {
+  id              String   @id @default(cuid())
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  filename        String
+  fileUrl         String
+  documentType    String   // e.g., "CONSTITUTION", "AUDIT_REPORT", etc.
+  uploadedAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@index([applicationId])
+}
+
+// Payment model - tracks cooperative registration fees
+model Payment {
+  id              String   @id @default(cuid())
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  amount          Float    // in naira
+  currency        String   @default("NGN")
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String?  // "PAYSTACK", "TRANSFER", etc.
+  transactionRef  String?  @unique
+  paymentDate     DateTime?
+  rawPayload      String?  // store raw webhook data for audit
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([applicationId])
+  @@index([transactionRef])
+}
+
+// Certificate model - issued cooperative registration certificates
+model Certificate {
+  id              String   @id @default(cuid())
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  registrationNo  String   @unique
+  certificateUrl  String
+  issuedAt        DateTime @default(now())
+  revokedAt       DateTime?
+  revocationReason String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([applicationId])
+  @@index([registrationNo])
+}
+
+// Setting model - system configuration
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ActivityLog model - audit trail
+model ActivityLog {
+  id            String   @id @default(cuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  action        String   // e.g., "LOGIN", "CREATE_APPLICATION", "APPROVE", etc.
+  description   String?
+  metadata      String?  // JSON metadata
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([applicationId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// Enums
+enum UserRole {
+  SYSTEM_ADMIN
+  ADMIN
+  STAFF
+  USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ApplicationStatus {
+  NEW
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
