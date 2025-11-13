@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsOptional, IsNotEmpty } from "class-validator";
 
 /**
  * DTO for updating user info

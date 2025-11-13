@@ -1,8 +1,13 @@
-import { Injectable, ConflictException, NotFoundException, Logger } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  Logger,
+} from "@nestjs/common";
+import * as bcrypt from "bcryptjs";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 /**
  * Users Service
@@ -10,14 +15,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
  */
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger('UsersService');
+  private readonly logger = new Logger("UsersService");
 
   constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Get all users (admin only)
    */
-  async findAll(skip: number = 0, take: number = 10): Promise<{
+  async findAll(
+    skip: number = 0,
+    take: number = 10
+  ): Promise<{
     users: Array<{
       id: string;
       email: string;
@@ -99,7 +107,9 @@ export class UsersService {
     });
 
     if (existing) {
-      throw new ConflictException(`User with email ${dto.email} already exists`);
+      throw new ConflictException(
+        `User with email ${dto.email} already exists`
+      );
     }
 
     // Hash password
@@ -111,7 +121,7 @@ export class UsersService {
         password: hashedPassword,
         firstName: dto.firstName,
         lastName: dto.lastName,
-        role: dto.role || 'USER',
+        role: dto.role || "USER",
       },
       select: {
         id: true,
@@ -131,7 +141,10 @@ export class UsersService {
   /**
    * Update user info
    */
-  async update(id: string, dto: UpdateUserDto): Promise<{
+  async update(
+    id: string,
+    dto: UpdateUserDto
+  ): Promise<{
     id: string;
     email: string;
     firstName: string;
@@ -182,7 +195,10 @@ export class UsersService {
   /**
    * Update user status (activate/deactivate/suspend)
    */
-  async updateStatus(id: string, status: string): Promise<{
+  async updateStatus(
+    id: string,
+    status: string
+  ): Promise<{
     id: string;
     email: string;
     status: string;

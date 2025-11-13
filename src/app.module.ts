@@ -4,6 +4,7 @@ import * as Joi from 'joi';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { ApplicationsModule } from './modules/applications/applications.module';
 
 /**
  * Root application module.
@@ -31,6 +32,7 @@ import { UsersModule } from './modules/users/users.module';
     // Feature modules
     AuthModule,
     UsersModule,
+    ApplicationsModule,
   ],
   controllers: [],
   providers: [],
