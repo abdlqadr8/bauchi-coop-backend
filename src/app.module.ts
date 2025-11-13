@@ -10,6 +10,7 @@ import { CertificatesModule } from './modules/certificates/certificates.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 /**
  * Root application module.
@@ -43,6 +44,7 @@ import { ReportsModule } from './modules/reports/reports.module';
     SettingsModule,
     DashboardModule,
     ReportsModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [],
