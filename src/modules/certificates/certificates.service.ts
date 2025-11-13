@@ -3,11 +3,11 @@ import {
   BadRequestException,
   NotFoundException,
   Logger,
-} from "@nestjs/common";
-import { PrismaService } from "@/prisma/prisma.service";
-import { GenerateCertificateDto } from "./dto/generate-certificate.dto";
-import { RevokeCertificateDto } from "./dto/revoke-certificate.dto";
-import { v4 as uuidv4 } from "uuid";
+} from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GenerateCertificateDto } from './dto/generate-certificate.dto';
+import { RevokeCertificateDto } from './dto/revoke-certificate.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Certificates Service
@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
  */
 @Injectable()
 export class CertificatesService {
-  private readonly logger = new Logger("CertificatesService");
+  private readonly logger = new Logger('CertificatesService');
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -37,20 +37,20 @@ export class CertificatesService {
       throw new NotFoundException(`Application not found`);
     }
 
-    if (application.status !== "APPROVED") {
+    if (application.status !== 'APPROVED') {
       throw new BadRequestException(
-        `Application must be APPROVED to generate certificate (current: ${application.status})`
+        `Application must be APPROVED to generate certificate (current: ${application.status})`,
       );
     }
 
     // Check if certificate already exists
-    const existing = await this.prisma.certificate.findUnique({
+    const existing = await this.prisma.certificate.findFirst({
       where: { applicationId: dto.applicationId },
     });
 
     if (existing && !existing.revokedAt) {
       throw new BadRequestException(
-        `Certificate already exists for this application`
+        `Certificate already exists for this application`,
       );
     }
 
@@ -83,7 +83,7 @@ export class CertificatesService {
    */
   async revoke(
     id: string,
-    dto: RevokeCertificateDto
+    dto: RevokeCertificateDto,
   ): Promise<{
     id: string;
     registrationNo: string;
@@ -94,11 +94,11 @@ export class CertificatesService {
     });
 
     if (!certificate) {
-      throw new NotFoundException("Certificate not found");
+      throw new NotFoundException('Certificate not found');
     }
 
     if (certificate.revokedAt) {
-      throw new BadRequestException("Certificate is already revoked");
+      throw new BadRequestException('Certificate is already revoked');
     }
 
     const revoked = await this.prisma.certificate.update({

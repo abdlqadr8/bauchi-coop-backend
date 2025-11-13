@@ -27,7 +27,7 @@ export class ApplicationsService {
   }> {
     // Use transaction to create application and documents atomically
     const application = await this.prisma.$transaction(
-      async (tx: PrismaClient) => {
+      async (tx: any) => {
         const app = await tx.application.create({
           data: {
             cooperativeName: dto.cooperativeName,
@@ -52,7 +52,7 @@ export class ApplicationsService {
 
         return app;
       }
-    );
+    ) as any;
 
     this.logger.log(
       `Application submitted: ${application.id} (${dto.cooperativeName})`
@@ -87,7 +87,7 @@ export class ApplicationsService {
     }>;
     total: number;
   }> {
-    const where = status ? { status } : {};
+    const where = status ? { status: status as any } : {};
 
     const [applications, total] = await Promise.all([
       this.prisma.application.findMany({
@@ -173,7 +173,7 @@ export class ApplicationsService {
     const updated = await this.prisma.application.update({
       where: { id },
       data: {
-        status: dto.status,
+        status: dto.status as any,
         notes: dto.notes,
         reviewedAt: new Date(),
         reviewedBy: reviewedByUserId,
@@ -205,11 +205,11 @@ export class ApplicationsService {
     const [total, newCount, underReview, approved, rejected, flagged] =
       await Promise.all([
         this.prisma.application.count(),
-        this.prisma.application.count({ where: { status: "NEW" } }),
-        this.prisma.application.count({ where: { status: "UNDER_REVIEW" } }),
-        this.prisma.application.count({ where: { status: "APPROVED" } }),
-        this.prisma.application.count({ where: { status: "REJECTED" } }),
-        this.prisma.application.count({ where: { status: "FLAGGED" } }),
+        this.prisma.application.count({ where: { status: "NEW" as any } }),
+        this.prisma.application.count({ where: { status: "UNDER_REVIEW" as any } }),
+        this.prisma.application.count({ where: { status: "APPROVED" as any } }),
+        this.prisma.application.count({ where: { status: "REJECTED" as any } }),
+        this.prisma.application.count({ where: { status: "FLAGGED" as any } }),
       ]);
 
     return {

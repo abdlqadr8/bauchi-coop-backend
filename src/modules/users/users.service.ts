@@ -3,12 +3,12 @@ import {
   ConflictException,
   NotFoundException,
   Logger,
-} from "@nestjs/common";
-import * as bcrypt from "bcryptjs";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "@/prisma/prisma.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+} from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 /**
  * Users Service
@@ -16,7 +16,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
  */
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger("UsersService");
+  private readonly logger = new Logger('UsersService');
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -25,7 +25,7 @@ export class UsersService {
    */
   async findAll(
     skip: number = 0,
-    take: number = 10
+    take: number = 10,
   ): Promise<{
     users: Array<{
       id: string;
@@ -109,7 +109,7 @@ export class UsersService {
 
     if (existing) {
       throw new ConflictException(
-        `User with email ${dto.email} already exists`
+        `User with email ${dto.email} already exists`,
       );
     }
 
@@ -122,7 +122,7 @@ export class UsersService {
         password: hashedPassword,
         firstName: dto.firstName,
         lastName: dto.lastName,
-        role: (dto.role || "USER") as any,
+        role: (dto.role || 'USER') as any,
       },
       select: {
         id: true,
@@ -144,7 +144,7 @@ export class UsersService {
    */
   async update(
     id: string,
-    dto: UpdateUserDto
+    dto: UpdateUserDto,
   ): Promise<{
     id: string;
     email: string;
@@ -198,7 +198,7 @@ export class UsersService {
    */
   async updateStatus(
     id: string,
-    status: string
+    status: string,
   ): Promise<{
     id: string;
     email: string;

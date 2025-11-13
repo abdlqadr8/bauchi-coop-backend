@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 
 /**
@@ -24,7 +25,7 @@ export class ReportsService {
       statuses.map(async (status) => ({
         status,
         count: await this.prisma.application.count({
-          where: { status },
+          where: { status: status as any },
         }),
       })),
     );
@@ -47,15 +48,15 @@ export class ReportsService {
     const byStatus = await Promise.all(
       statuses.map(async (status) => {
         const aggregation = await this.prisma.payment.aggregate({
-          where: { status },
+          where: { status: status as any },
           _sum: { amount: true },
           _count: true,
         });
 
         return {
           status,
-          count: aggregation._count,
-          amount: aggregation._sum.amount || 0,
+          count: aggregation._count || 0,
+          amount: aggregation._sum?.amount || 0,
         };
       }),
     );
@@ -80,8 +81,8 @@ export class ReportsService {
     const [totalUsers, activeUsers, inactiveUsers, lastWeekLogins] =
       await Promise.all([
         this.prisma.user.count(),
-        this.prisma.user.count({ where: { status: 'ACTIVE' } }),
-        this.prisma.user.count({ where: { status: 'INACTIVE' } }),
+        this.prisma.user.count({ where: { status: 'ACTIVE' as any } }),
+        this.prisma.user.count({ where: { status: 'INACTIVE' as any } }),
         this.prisma.user.count({
           where: {
             lastLogin: {
