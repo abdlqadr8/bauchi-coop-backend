@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException, Logger } from "@nestjs/common";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { PrismaService } from "@/prisma/prisma.service";
-import { SubmitApplicationDto } from "./dto/submit-application.dto";
-import { UpdateApplicationStatusDto } from "./dto/update-application-status.dto";
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { SubmitApplicationDto } from './dto/submit-application.dto';
+import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 
 /**
  * Applications Service
@@ -10,7 +10,7 @@ import { UpdateApplicationStatusDto } from "./dto/update-application-status.dto"
  */
 @Injectable()
 export class ApplicationsService {
-  private readonly logger = new Logger("ApplicationsService");
+  private readonly logger = new Logger('ApplicationsService');
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -20,49 +20,52 @@ export class ApplicationsService {
   async submitApplication(dto: SubmitApplicationDto): Promise<{
     id: string;
     cooperativeName: string;
+    registrationNumber: string | null;
     email: string;
     phone: string;
+    address: string;
     status: string;
     submittedAt: Date;
   }> {
     // Use transaction to create application and documents atomically
-    const application = await this.prisma.$transaction(
-      async (tx: any) => {
-        const app = await tx.application.create({
-          data: {
-            cooperativeName: dto.cooperativeName,
-            email: dto.email,
-            phone: dto.phone,
-            address: dto.address,
-            status: "NEW",
-          },
+    const application = (await this.prisma.$transaction(async (tx: any) => {
+      const app = await tx.application.create({
+        data: {
+          cooperativeName: dto.cooperativeName,
+          registrationNumber: dto.registrationNumber,
+          email: dto.emailAddress,
+          phone: dto.phoneNumber,
+          address: dto.address,
+          status: 'NEW',
+        },
+      });
+
+      // Create associated documents if provided
+      if (dto.documents && dto.documents.length > 0) {
+        await tx.document.createMany({
+          data: dto.documents.map((doc) => ({
+            applicationId: app.id,
+            filename: doc.filename,
+            fileUrl: doc.fileUrl,
+            documentType: doc.documentType,
+          })),
         });
-
-        // Create associated documents if provided
-        if (dto.documents && dto.documents.length > 0) {
-          await tx.document.createMany({
-            data: dto.documents.map((doc) => ({
-              applicationId: app.id,
-              filename: doc.filename,
-              fileUrl: doc.fileUrl,
-              documentType: doc.documentType,
-            })),
-          });
-        }
-
-        return app;
       }
-    ) as any;
+
+      return app;
+    })) as any;
 
     this.logger.log(
-      `Application submitted: ${application.id} (${dto.cooperativeName})`
+      `Application submitted: ${application.id} (${dto.cooperativeName})`,
     );
 
     return {
       id: application.id,
       cooperativeName: application.cooperativeName,
+      registrationNumber: application.registrationNumber,
       email: application.email,
       phone: application.phone,
+      address: application.address,
       status: application.status,
       submittedAt: application.submittedAt,
     };
@@ -74,7 +77,7 @@ export class ApplicationsService {
   async findAll(
     skip: number = 0,
     take: number = 10,
-    status?: string
+    status?: string,
   ): Promise<{
     applications: Array<{
       id: string;
@@ -155,7 +158,7 @@ export class ApplicationsService {
   async updateStatus(
     id: string,
     dto: UpdateApplicationStatusDto,
-    reviewedByUserId?: string
+    reviewedByUserId?: string,
   ): Promise<{
     id: string;
     cooperativeName: string;
@@ -205,11 +208,13 @@ export class ApplicationsService {
     const [total, newCount, underReview, approved, rejected, flagged] =
       await Promise.all([
         this.prisma.application.count(),
-        this.prisma.application.count({ where: { status: "NEW" as any } }),
-        this.prisma.application.count({ where: { status: "UNDER_REVIEW" as any } }),
-        this.prisma.application.count({ where: { status: "APPROVED" as any } }),
-        this.prisma.application.count({ where: { status: "REJECTED" as any } }),
-        this.prisma.application.count({ where: { status: "FLAGGED" as any } }),
+        this.prisma.application.count({ where: { status: 'NEW' as any } }),
+        this.prisma.application.count({
+          where: { status: 'UNDER_REVIEW' as any },
+        }),
+        this.prisma.application.count({ where: { status: 'APPROVED' as any } }),
+        this.prisma.application.count({ where: { status: 'REJECTED' as any } }),
+        this.prisma.application.count({ where: { status: 'FLAGGED' as any } }),
       ]);
 
     return {

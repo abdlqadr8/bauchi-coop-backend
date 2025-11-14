@@ -1,20 +1,36 @@
-import { IsEmail, IsNotEmpty, IsOptional } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
  * DTO for submitting a cooperative application
  */
 export class SubmitApplicationDto {
   @IsNotEmpty()
+  @IsString()
   cooperativeName!: string;
 
-  @IsEmail()
-  email!: string;
+  @IsNotEmpty()
+  @IsString()
+  registrationNumber!: string;
 
   @IsNotEmpty()
-  phone!: string;
+  @IsString()
+  address!: string;
 
-  @IsOptional()
-  address?: string;
+  @IsNotEmpty()
+  @IsString()
+  contactPerson!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  phoneNumber!: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  emailAddress!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description!: string;
 
   @IsOptional()
   documents?: Array<{
