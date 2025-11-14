@@ -1,6 +1,6 @@
-import { ApplicationsService } from "./applications.service";
-import { SubmitApplicationDto } from "./dto/submit-application.dto";
-import { UpdateApplicationStatusDto } from "./dto/update-application-status.dto";
+import { ApplicationsService } from './applications.service';
+import { SubmitApplicationDto } from './dto/submit-application.dto';
+import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 interface RequestWithUser extends Request {
     user?: {
         userId: string;
@@ -22,8 +22,10 @@ export declare class ApplicationsController {
     submitApplication(submitApplicationDto: SubmitApplicationDto): Promise<{
         id: string;
         cooperativeName: string;
+        registrationNumber: string | null;
         email: string;
         phone: string;
+        address: string;
         status: string;
         submittedAt: Date;
     }>;

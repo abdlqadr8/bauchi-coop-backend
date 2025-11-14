@@ -38,7 +38,7 @@ const moduleAlias = __importStar(require("module-alias"));
 require("reflect-metadata");
 // Register module aliases for @/ prefix
 moduleAlias.addAliases({
-    "@": __dirname,
+    '@': __dirname,
 });
 const core_1 = require("@nestjs/core");
 const common_1 = require("@nestjs/common");
@@ -56,12 +56,12 @@ async function bootstrap() {
             enableImplicitConversion: true,
         },
     }));
-    const port = configService.get("PORT", 3000);
+    const port = configService.get('PORT', 3000);
     await app.listen(port);
     console.log(`✓ Application running on http://localhost:${port}`);
 }
 bootstrap().catch((err) => {
-    console.error("Failed to start application:", err);
+    console.error('Failed to start application:', err);
     process.exit(1);
 });
 //# sourceMappingURL=main.js.map

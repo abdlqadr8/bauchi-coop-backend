@@ -15,8 +15,10 @@ export declare class ApplicationsService {
     submitApplication(dto: SubmitApplicationDto): Promise<{
         id: string;
         cooperativeName: string;
+        registrationNumber: string | null;
         email: string;
         phone: string;
+        address: string;
         status: string;
         submittedAt: Date;
     }>;

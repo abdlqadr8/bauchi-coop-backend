@@ -3,9 +3,12 @@
  */
 export declare class SubmitApplicationDto {
     cooperativeName: string;
-    email: string;
-    phone: string;
-    address?: string;
+    registrationNumber: string;
+    address: string;
+    contactPerson: string;
+    phoneNumber: string;
+    emailAddress: string;
+    description: string;
     documents?: Array<{
         filename: string;
         fileUrl: string;

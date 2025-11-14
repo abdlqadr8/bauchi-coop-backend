@@ -30,8 +30,9 @@ let ApplicationsService = class ApplicationsService {
             const app = await tx.application.create({
                 data: {
                     cooperativeName: dto.cooperativeName,
-                    email: dto.email,
-                    phone: dto.phone,
+                    registrationNumber: dto.registrationNumber,
+                    email: dto.emailAddress,
+                    phone: dto.phoneNumber,
                     address: dto.address,
                     status: 'NEW',
                 },
@@ -53,8 +54,10 @@ let ApplicationsService = class ApplicationsService {
         return {
             id: application.id,
             cooperativeName: application.cooperativeName,
+            registrationNumber: application.registrationNumber,
             email: application.email,
             phone: application.phone,
+            address: application.address,
             status: application.status,
             submittedAt: application.submittedAt,
         };
