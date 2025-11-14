@@ -73,7 +73,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApplicationsController.prototype, "submitApplication", null);
 __decorate([
-    (0, common_1.Get)('admin'),
+    (0, common_1.Get)('applications'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('SYSTEM_ADMIN', 'ADMIN'),
     __param(0, (0, common_1.Query)('skip')),
@@ -84,7 +84,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApplicationsController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('admin/:id'),
+    (0, common_1.Get)('applications/:id'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('SYSTEM_ADMIN', 'ADMIN'),
     __param(0, (0, common_1.Param)('id')),
@@ -93,7 +93,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApplicationsController.prototype, "findById", null);
 __decorate([
-    (0, common_1.Patch)('admin/:id/status'),
+    (0, common_1.Patch)('applications/:id/status'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('SYSTEM_ADMIN', 'ADMIN'),
     __param(0, (0, common_1.Param)('id')),
@@ -104,7 +104,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApplicationsController.prototype, "updateStatus", null);
 __decorate([
-    (0, common_1.Get)('admin/stats/overview'),
+    (0, common_1.Get)('applications/stats/overview'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('SYSTEM_ADMIN', 'ADMIN'),
     __metadata("design:type", Function),
@@ -112,7 +112,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApplicationsController.prototype, "getStats", null);
 exports.ApplicationsController = ApplicationsController = __decorate([
-    (0, common_1.Controller)('applications'),
+    (0, common_1.Controller)('admin'),
     __metadata("design:paramtypes", [applications_service_1.ApplicationsService])
 ], ApplicationsController);
 //# sourceMappingURL=applications.controller.js.map

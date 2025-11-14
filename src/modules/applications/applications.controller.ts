@@ -28,7 +28,7 @@ interface RequestWithUser extends Request {
  * Applications Controller
  * Handles public submissions and admin management
  */
-@Controller('applications')
+@Controller('admin')
 export class ApplicationsController {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
@@ -56,7 +56,7 @@ export class ApplicationsController {
    * GET /admin/applications
    * List all applications (admin)
    */
-  @Get('admin')
+  @Get('applications')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async findAll(
@@ -86,7 +86,7 @@ export class ApplicationsController {
    * GET /admin/applications/:id
    * Get application by ID with documents (admin)
    */
-  @Get('admin/:id')
+  @Get('applications/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async findById(@Param('id') id: string): Promise<{
@@ -116,7 +116,7 @@ export class ApplicationsController {
    * PATCH /admin/applications/:id/status
    * Update application status (admin)
    */
-  @Patch('admin/:id/status')
+  @Patch('applications/:id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async updateStatus(
@@ -140,7 +140,7 @@ export class ApplicationsController {
    * GET /admin/applications/stats/overview
    * Get application statistics
    */
-  @Get('admin/stats/overview')
+  @Get('applications/stats/overview')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async getStats(): Promise<{

@@ -1,7 +1,8 @@
-import { Module } from "@nestjs/common";
-import { CertificatesController } from "./certificates.controller";
-import { CertificatesService } from "./certificates.service";
-import { PrismaModule } from "@/prisma/prisma.module";
+import { Module } from '@nestjs/common';
+import { CertificatesController } from './certificates.controller';
+import { CertificatesPublicController } from './certificates-public.controller';
+import { CertificatesService } from './certificates.service';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 /**
  * Certificates Module
@@ -9,7 +10,7 @@ import { PrismaModule } from "@/prisma/prisma.module";
  */
 @Module({
   imports: [PrismaModule],
-  controllers: [CertificatesController],
+  controllers: [CertificatesController, CertificatesPublicController],
   providers: [CertificatesService],
   exports: [CertificatesService],
 })

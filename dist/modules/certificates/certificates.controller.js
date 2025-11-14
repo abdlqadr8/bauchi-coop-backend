@@ -21,8 +21,8 @@ const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 /**
- * Certificates Controller
- * Handles certificate generation, revocation, and public verification
+ * Certificates Controller (Admin)
+ * Handles certificate generation and revocation
  */
 let CertificatesController = class CertificatesController {
     constructor(certificatesService) {
@@ -42,43 +42,29 @@ let CertificatesController = class CertificatesController {
     async revoke(id, revokeCertificateDto) {
         return this.certificatesService.revoke(id, revokeCertificateDto);
     }
-    /**
-     * GET /certificates/verify/:regNo
-     * Verify certificate by registration number (public)
-     */
-    async verify(regNo) {
-        return this.certificatesService.verify(regNo);
-    }
 };
 exports.CertificatesController = CertificatesController;
 __decorate([
-    (0, common_1.Post)("admin"),
+    (0, common_1.Post)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)("SYSTEM_ADMIN", "ADMIN"),
+    (0, roles_decorator_1.Roles)('SYSTEM_ADMIN', 'ADMIN'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [generate_certificate_dto_1.GenerateCertificateDto]),
     __metadata("design:returntype", Promise)
 ], CertificatesController.prototype, "generate", null);
 __decorate([
-    (0, common_1.Patch)("admin/:id/revoke"),
+    (0, common_1.Patch)(':id/revoke'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)("SYSTEM_ADMIN", "ADMIN"),
-    __param(0, (0, common_1.Param)("id")),
+    (0, roles_decorator_1.Roles)('SYSTEM_ADMIN', 'ADMIN'),
+    __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, revoke_certificate_dto_1.RevokeCertificateDto]),
     __metadata("design:returntype", Promise)
 ], CertificatesController.prototype, "revoke", null);
-__decorate([
-    (0, common_1.Get)("verify/:regNo"),
-    __param(0, (0, common_1.Param)("regNo")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], CertificatesController.prototype, "verify", null);
 exports.CertificatesController = CertificatesController = __decorate([
-    (0, common_1.Controller)("certificates"),
+    (0, common_1.Controller)('admin/certificates'),
     __metadata("design:paramtypes", [certificates_service_1.CertificatesService])
 ], CertificatesController);
 //# sourceMappingURL=certificates.controller.js.map
