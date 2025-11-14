@@ -19,21 +19,21 @@ const prisma_service_1 = require("@/prisma/prisma.service");
 let ApplicationsService = class ApplicationsService {
     constructor(prisma) {
         this.prisma = prisma;
-        this.logger = new common_1.Logger("ApplicationsService");
+        this.logger = new common_1.Logger('ApplicationsService');
     }
     /**
      * Submit new cooperative application (public)
      */
     async submitApplication(dto) {
         // Use transaction to create application and documents atomically
-        const application = await this.prisma.$transaction(async (tx) => {
+        const application = (await this.prisma.$transaction(async (tx) => {
             const app = await tx.application.create({
                 data: {
                     cooperativeName: dto.cooperativeName,
                     email: dto.email,
                     phone: dto.phone,
                     address: dto.address,
-                    status: "NEW",
+                    status: 'NEW',
                 },
             });
             // Create associated documents if provided
@@ -48,7 +48,7 @@ let ApplicationsService = class ApplicationsService {
                 });
             }
             return app;
-        });
+        }));
         this.logger.log(`Application submitted: ${application.id} (${dto.cooperativeName})`);
         return {
             id: application.id,
@@ -136,11 +136,13 @@ let ApplicationsService = class ApplicationsService {
     async getStats() {
         const [total, newCount, underReview, approved, rejected, flagged] = await Promise.all([
             this.prisma.application.count(),
-            this.prisma.application.count({ where: { status: "NEW" } }),
-            this.prisma.application.count({ where: { status: "UNDER_REVIEW" } }),
-            this.prisma.application.count({ where: { status: "APPROVED" } }),
-            this.prisma.application.count({ where: { status: "REJECTED" } }),
-            this.prisma.application.count({ where: { status: "FLAGGED" } }),
+            this.prisma.application.count({ where: { status: 'NEW' } }),
+            this.prisma.application.count({
+                where: { status: 'UNDER_REVIEW' },
+            }),
+            this.prisma.application.count({ where: { status: 'APPROVED' } }),
+            this.prisma.application.count({ where: { status: 'REJECTED' } }),
+            this.prisma.application.count({ where: { status: 'FLAGGED' } }),
         ]);
         return {
             total,

@@ -1,6 +1,6 @@
-import { PrismaService } from "@/prisma/prisma.service";
-import { SubmitApplicationDto } from "./dto/submit-application.dto";
-import { UpdateApplicationStatusDto } from "./dto/update-application-status.dto";
+import { PrismaService } from '@/prisma/prisma.service';
+import { SubmitApplicationDto } from './dto/submit-application.dto';
+import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 /**
  * Applications Service
  * Handles cooperative application submissions and admin operations
