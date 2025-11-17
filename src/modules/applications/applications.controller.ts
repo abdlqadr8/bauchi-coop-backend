@@ -25,38 +25,18 @@ interface RequestWithUser extends Request {
 }
 
 /**
- * Applications Controller
- * Handles public submissions and admin management
+ * Applications Admin Controller
+ * Handles admin management of cooperative applications
  */
-@Controller('admin')
-export class ApplicationsController {
+@Controller('api/v1/admin/applications')
+export class ApplicationsAdminController {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
   /**
-   * POST /applications
-   * Submit new cooperative application (public)
-   */
-  @Post()
-  async submitApplication(
-    @Body() submitApplicationDto: SubmitApplicationDto,
-  ): Promise<{
-    id: string;
-    cooperativeName: string;
-    registrationNumber: string | null;
-    email: string;
-    phone: string;
-    address: string;
-    status: string;
-    submittedAt: Date;
-  }> {
-    return this.applicationsService.submitApplication(submitApplicationDto);
-  }
-
-  /**
-   * GET /admin/applications
+   * GET /api/v1/admin/applications
    * List all applications (admin)
    */
-  @Get('applications')
+  @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async findAll(
@@ -83,10 +63,10 @@ export class ApplicationsController {
   }
 
   /**
-   * GET /admin/applications/:id
+   * GET /api/v1/admin/applications/:id
    * Get application by ID with documents (admin)
    */
-  @Get('applications/:id')
+  @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async findById(@Param('id') id: string): Promise<{
@@ -113,10 +93,10 @@ export class ApplicationsController {
   }
 
   /**
-   * PATCH /admin/applications/:id/status
+   * PATCH /api/v1/admin/applications/:id/status
    * Update application status (admin)
    */
-  @Patch('applications/:id/status')
+  @Patch(':id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async updateStatus(
@@ -128,6 +108,7 @@ export class ApplicationsController {
     cooperativeName: string;
     status: string;
     reviewedAt: Date | null;
+    reviewedBy: string | null;
   }> {
     return this.applicationsService.updateStatus(
       id,
@@ -137,10 +118,10 @@ export class ApplicationsController {
   }
 
   /**
-   * GET /admin/applications/stats/overview
+   * GET /api/v1/admin/applications/stats/overview
    * Get application statistics
    */
-  @Get('applications/stats/overview')
+  @Get('stats/overview')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SYSTEM_ADMIN', 'ADMIN')
   async getStats(): Promise<{

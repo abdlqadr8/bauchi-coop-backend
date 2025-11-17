@@ -35,7 +35,7 @@ export class SubmitApplicationDto {
   @IsOptional()
   documents?: Array<{
     filename: string;
-    fileUrl: string;
+    data: string; // Base64 encoded file data
     documentType: string;
   }>;
 }
