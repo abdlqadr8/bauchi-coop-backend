@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import * as bcrypt from "bcryptjs";
+import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -8,11 +8,11 @@ const prisma = new PrismaClient();
  * Creates initial admin user for development
  */
 async function main(): Promise<void> {
-  console.log("🌱 Seeding database...");
+  console.log('🌱 Seeding database...');
 
   // Create admin user
-  const adminEmail = "admin@bauchicoop.local";
-  const adminPassword = "Admin@123456"; // Change this in production
+  const adminEmail = 'admin@bauchicoop.local';
+  const adminPassword = 'Admin@123456'; // Change this in production
 
   try {
     const existingAdmin = await prisma.user.findUnique({
@@ -21,38 +21,68 @@ async function main(): Promise<void> {
 
     if (existingAdmin) {
       console.log(`✓ Admin user already exists: ${adminEmail}`);
-      return;
+    } else {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+      const admin = await prisma.user.create({
+        data: {
+          email: adminEmail,
+          password: hashedPassword,
+          firstName: 'System',
+          lastName: 'Administrator',
+          role: 'SYSTEM_ADMIN',
+          status: 'ACTIVE',
+        },
+      });
+
+      console.log(`✓ Admin user created successfully`);
+      console.log(`  Email: ${adminEmail}`);
+      console.log(`  Password: ${adminPassword} (CHANGE IN PRODUCTION)`);
+      console.log(`  Role: SYSTEM_ADMIN`);
     }
 
-    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    // Fix certificates with missing certificateUrl
+    const allCertificates = await prisma.certificate.findMany();
 
-    const admin = await prisma.user.create({
-      data: {
-        email: adminEmail,
-        password: hashedPassword,
-        firstName: "System",
-        lastName: "Administrator",
-        role: "SYSTEM_ADMIN",
-        status: "ACTIVE",
-      },
-    });
+    const certificatesWithoutUrl = allCertificates.filter(
+      (cert) => !cert.certificateUrl || cert.certificateUrl.trim() === '',
+    );
 
-    console.log(`✓ Admin user created successfully`);
-    console.log(`  Email: ${adminEmail}`);
-    console.log(`  Password: ${adminPassword} (CHANGE IN PRODUCTION)`);
-    console.log(`  Role: SYSTEM_ADMIN`);
+    if (certificatesWithoutUrl.length > 0) {
+      console.log(
+        `Updating ${certificatesWithoutUrl.length} certificates with missing URLs...`,
+      );
+
+      for (const cert of certificatesWithoutUrl) {
+        console.log(
+          `  - Updating certificate: ${cert.id} (${cert.registrationNo})`,
+        );
+        await prisma.certificate.update({
+          where: { id: cert.id },
+          data: {
+            certificateUrl: `https://certificates.bauchicoop.local/${cert.registrationNo}.pdf`,
+          },
+        });
+      }
+
+      console.log(`✓ Updated ${certificatesWithoutUrl.length} certificates`);
+    } else {
+      console.log('✓ All certificates have URLs');
+    }
   } catch (error) {
-    console.error("Error seeding database:", error);
+    console.error('Error seeding database:', error);
     process.exit(1);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
 main()
   .then(() => {
-    console.log("✓ Seeding completed");
+    console.log('✓ Seeding completed');
     process.exit(0);
   })
   .catch((error) => {
-    console.error("Seed failed:", error);
+    console.error('Seed failed:', error);
     process.exit(1);
   });
