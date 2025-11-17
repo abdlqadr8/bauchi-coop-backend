@@ -1,1 +1,0 @@
-{"version":3,"file":"payment-webhook.dto.d.ts","sourceRoot":"","sources":["../../../../src/modules/payments/dto/payment-webhook.dto.ts"],"names":[],"mappings":"AAEA;;GAEG;AACH,qBAAa,iBAAiB;IAG5B,MAAM,EAAG,MAAM,CAAC;IAIhB,SAAS,EAAG,MAAM,CAAC;IAInB,MAAM,CAAC,EAAE,MAAM,CAAC;IAIhB,aAAa,CAAC,EAAE,MAAM,CAAC;IAEvB,CAAC,GAAG,EAAE,MAAM,GAAG,OAAO,CAAC;CACxB"}
