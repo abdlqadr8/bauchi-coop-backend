@@ -7,7 +7,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 /**
  * Reports Controller
  */
-@Controller('admin/reports')
+@Controller('api/v1/admin/reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('SYSTEM_ADMIN', 'ADMIN')
 export class ReportsController {

@@ -15,7 +15,7 @@ interface RequestWithUser extends Request {
  * Uploads Controller
  * Handles presigned URLs and document metadata
  */
-@Controller('uploads')
+@Controller('api/v1/uploads')
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
