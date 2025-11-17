@@ -5,7 +5,7 @@ import { CertificatesService } from './certificates.service';
  * Public Certificates Controller
  * Handles public certificate verification (no authentication required)
  */
-@Controller('certificates')
+@Controller('api/v1/certificates')
 export class CertificatesPublicController {
   constructor(private readonly certificatesService: CertificatesService) {}
 

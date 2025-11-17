@@ -119,6 +119,91 @@ export class CertificatesService {
   }
 
   /**
+   * Get all certificates (admin)
+   */
+  async findAll(
+    skip: number = 0,
+    take: number = 10,
+    status?: string,
+  ): Promise<{
+    certificates: Array<{
+      id: string;
+      certificateId: string;
+      registrationNo: string;
+      certificateUrl: string;
+      status: string;
+      issuedAt: Date;
+      revokedAt: Date | null;
+      revocationReason: string | null;
+      application: {
+        cooperativeName: string;
+        email: string;
+      };
+    }>;
+    total: number;
+  }> {
+    try {
+      let where: any = {};
+
+      // Filter by status: issued, revoked, or all
+      if (status === 'revoked') {
+        where.revokedAt = { not: null };
+      } else if (status === 'issued') {
+        where.revokedAt = null;
+      }
+
+      const [certificates, total] = await Promise.all([
+        this.prisma.certificate.findMany({
+          where,
+          skip,
+          take,
+          select: {
+            id: true,
+            registrationNo: true,
+            certificateUrl: true,
+            issuedAt: true,
+            revokedAt: true,
+            revocationReason: true,
+            application: {
+              select: {
+                cooperativeName: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: { issuedAt: 'desc' },
+        }),
+        this.prisma.certificate.count({ where }),
+      ]);
+
+      this.logger.debug(
+        `Raw certificates from DB:`,
+        JSON.stringify(certificates, null, 2),
+      );
+
+      return {
+        certificates: certificates.map((cert) => ({
+          id: cert.id,
+          certificateId: cert.id.substring(0, 8).toUpperCase(),
+          registrationNo: cert.registrationNo,
+          certificateUrl: cert.certificateUrl,
+          status: cert.revokedAt ? 'revoked' : 'issued',
+          issuedAt: cert.issuedAt,
+          revokedAt: cert.revokedAt,
+          revocationReason: cert.revocationReason,
+          application: cert.application,
+        })),
+        total,
+      };
+    } catch (error: any) {
+      this.logger.error(
+        `Failed to fetch certificates: ${error?.message || 'Unknown error'}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
    * Verify certificate by registration number (public)
    */
   async verify(registrationNo: string): Promise<{

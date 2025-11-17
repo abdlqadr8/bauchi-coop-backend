@@ -5,6 +5,7 @@ import {
   Patch,
   Param,
   Body,
+  Query,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -27,9 +28,44 @@ interface RequestWithUser extends Request {
  * Certificates Controller (Admin)
  * Handles certificate generation and revocation
  */
-@Controller('admin/certificates')
+@Controller('api/v1/admin/certificates')
 export class CertificatesController {
   constructor(private readonly certificatesService: CertificatesService) {}
+
+  /**
+   * GET /admin/certificates
+   * List all certificates (admin)
+   */
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  async findAll(
+    @Query('skip') skip?: string,
+    @Query('take') take?: string,
+    @Query('status') status?: string,
+  ): Promise<{
+    certificates: Array<{
+      id: string;
+      certificateId: string;
+      registrationNo: string;
+      certificateUrl: string;
+      status: string;
+      issuedAt: Date;
+      revokedAt: Date | null;
+      revocationReason: string | null;
+      application: {
+        cooperativeName: string;
+        email: string;
+      };
+    }>;
+    total: number;
+  }> {
+    return this.certificatesService.findAll(
+      skip ? parseInt(skip) : 0,
+      take ? parseInt(take) : 10,
+      status,
+    );
+  }
 
   /**
    * POST /admin/certificates
