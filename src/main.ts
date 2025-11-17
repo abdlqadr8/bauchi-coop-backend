@@ -16,6 +16,18 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  // Enable CORS for frontend
+  const frontendUrl = configService.get<string>(
+    'FRONTEND_URL',
+    'http://localhost:8081',
+  );
+  app.enableCors({
+    origin: frontendUrl,
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   // Enable global validation pipe with class-validator
   app.useGlobalPipes(
     new ValidationPipe({

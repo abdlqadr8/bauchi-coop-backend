@@ -11,6 +11,8 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { EmailModule } from './modules/email/email.module';
+import { FilesModule } from './modules/files/files.module';
 
 /**
  * Root application module.
@@ -31,10 +33,29 @@ import { UploadsModule } from './modules/uploads/uploads.module';
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .default('development'),
+        // Payment Gateway Configuration
+        PAYSTACK_PUBLIC_KEY: Joi.string().optional(),
+        PAYSTACK_SECRET_KEY: Joi.string().optional(),
+        // Email Configuration
+        MAILJET_API_KEY: Joi.string().optional(),
+        MAILJET_API_SECRET: Joi.string().optional(),
+        SENDER_EMAIL: Joi.string().default('noreply@bauchicooperative.ng'),
+        SENDER_NAME: Joi.string().default('Bauchi Cooperative Registry'),
+        ADMIN_EMAIL: Joi.string().default('admin@bauchicooperative.ng'),
+        // File Storage Configuration
+        CLOUDINARY_CLOUD_NAME: Joi.string().optional(),
+        CLOUDINARY_API_KEY: Joi.string().optional(),
+        CLOUDINARY_API_SECRET: Joi.string().optional(),
+        CLOUDINARY_UPLOAD_PRESET: Joi.string().optional(),
+        // Frontend Configuration
+        FRONTEND_URL: Joi.string().default('http://localhost:5173'),
       }),
     }),
     // Global database module
     PrismaModule,
+    // Global service modules
+    EmailModule,
+    FilesModule,
     // Feature modules
     AuthModule,
     UsersModule,
