@@ -1,8 +1,8 @@
-import { Injectable, UnauthorizedException, Logger } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
-import * as bcrypt from "bcryptjs";
-import { PrismaService } from "@/prisma/prisma.service";
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
+import { PrismaService } from '@/prisma/prisma.service';
 
 /**
  * AuthService handles authentication logic:
@@ -13,12 +13,12 @@ import { PrismaService } from "@/prisma/prisma.service";
  */
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger("AuthService");
+  private readonly logger = new Logger('AuthService');
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -26,7 +26,7 @@ export class AuthService {
    */
   async validateUser(
     email: string,
-    password: string
+    password: string,
   ): Promise<{
     id: string;
     email: string;
@@ -72,14 +72,17 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userId: user.id,
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get("JWT_EXPIRES_IN", "15m"),
+      expiresIn: this.configService.get('JWT_EXPIRES_IN', '15m'),
     });
 
     const refreshTokenData = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get("JWT_REFRESH_EXPIRES_IN", "7d"),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN', '7d'),
     });
 
     // Store refresh token in DB
@@ -122,7 +125,7 @@ export class AuthService {
       });
 
       if (!tokenRecord || new Date() > tokenRecord.expiresAt) {
-        throw new UnauthorizedException("Invalid or expired refresh token");
+        throw new UnauthorizedException('Invalid or expired refresh token');
       }
 
       const user = await this.prisma.user.findUnique({
@@ -130,7 +133,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException("User not found");
+        throw new UnauthorizedException('User not found');
       }
 
       // Revoke old token
@@ -143,9 +146,9 @@ export class AuthService {
       return this.login(user);
     } catch (error) {
       this.logger.error(
-        `Token refresh failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new UnauthorizedException("Invalid refresh token");
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 

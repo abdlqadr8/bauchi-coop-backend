@@ -6,11 +6,11 @@ import {
   Req,
   Logger,
   UnauthorizedException,
-} from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { LoginDto } from "./dto/login.dto";
-import { RefreshTokenDto } from "./dto/refresh-token.dto";
-import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 interface RequestWithUser extends Request {
   user?: {
@@ -24,9 +24,9 @@ interface RequestWithUser extends Request {
  * Auth Controller
  * Handles authentication endpoints: login, refresh, logout
  */
-@Controller("auth")
+@Controller('api/v1/auth')
 export class AuthController {
-  private readonly logger = new Logger("AuthController");
+  private readonly logger = new Logger('AuthController');
 
   constructor(private readonly authService: AuthService) {}
 
@@ -35,19 +35,19 @@ export class AuthController {
    * Login with email and password
    * Returns access and refresh tokens
    */
-  @Post("login")
+  @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{
     accessToken: string;
     refreshToken: string;
   }> {
     const user = await this.authService.validateUser(
       loginDto.email,
-      loginDto.password
+      loginDto.password,
     );
 
     if (!user) {
       this.logger.warn(`Login failed for email: ${loginDto.email}`);
-      throw new UnauthorizedException("Invalid email or password");
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     return this.authService.login(user);
@@ -57,7 +57,7 @@ export class AuthController {
    * POST /auth/refresh
    * Get new access token using refresh token
    */
-  @Post("refresh")
+  @Post('refresh')
   async refresh(@Body() refreshTokenDto: RefreshTokenDto): Promise<{
     accessToken: string;
     refreshToken: string;
@@ -70,14 +70,14 @@ export class AuthController {
    * Revoke all refresh tokens for user
    * Requires JWT authentication
    */
-  @Post("logout")
+  @Post('logout')
   @UseGuards(JwtAuthGuard)
   async logout(@Req() req: RequestWithUser): Promise<{ message: string }> {
     if (!req.user) {
-      throw new UnauthorizedException("User not found");
+      throw new UnauthorizedException('User not found');
     }
 
     await this.authService.logout(req.user.userId);
-    return { message: "Logged out successfully" };
+    return { message: 'Logged out successfully' };
   }
 }
