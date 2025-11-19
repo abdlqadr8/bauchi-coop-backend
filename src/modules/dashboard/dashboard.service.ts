@@ -284,7 +284,7 @@ export class DashboardService {
     Array<{
       id: string;
       cooperativeName: string;
-      applicationType: string;
+      registrationNumber: string | null;
       status: string;
       createdAt: Date;
     }>
@@ -297,16 +297,16 @@ export class DashboardService {
       select: {
         id: true,
         cooperativeName: true,
+        registrationNumber: true,
         status: true,
         createdAt: true,
       },
     });
 
-    // Map applications to include applicationType (derived from status or defaulting to "General")
     return applications.map((app) => ({
       id: app.id,
       cooperativeName: app.cooperativeName,
-      applicationType: 'General', // Default type - can be extended with more fields in schema
+      registrationNumber: app.registrationNumber,
       status: app.status,
       createdAt: app.createdAt,
     }));

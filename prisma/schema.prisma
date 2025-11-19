@@ -12,16 +12,18 @@ generator client {
 
 // User model - stores system users (admins, staff)
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String    // bcrypted
-  firstName     String
-  lastName      String
-  role          UserRole  @default(USER)
-  status        UserStatus @default(ACTIVE)
-  lastLogin     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  password              String    // bcrypted
+  firstName             String
+  lastName              String
+  phone                 String?
+  role                  UserRole  @default(USER)
+  status                UserStatus @default(ACTIVE)
+  mustChangePassword    Boolean   @default(false)
+  lastLogin             DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
   
   // Relations
   refreshTokens RefreshToken[]

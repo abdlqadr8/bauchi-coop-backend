@@ -84,11 +84,11 @@ export class PaymentsController {
 
   /**
    * GET /admin/payments
-   * List all payments (admin)
+   * List all payments (admin + staff)
    */
   @Get('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async findAll(
     @Query('skip') skip?: string,
     @Query('take') take?: string,
@@ -118,7 +118,7 @@ export class PaymentsController {
    */
   @Get('admin/stats/overview')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async getStats(): Promise<{
     totalAmount: number;
     totalCount: number;
@@ -135,7 +135,7 @@ export class PaymentsController {
    */
   @Get('admin/stats/monthly')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async getMonthlyBreakdown(): Promise<{
     data: Array<{
       month: string;

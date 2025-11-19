@@ -10,7 +10,9 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { IpAddress } from '../activity-logs/decorators/ip-address.decorator';
 
 interface RequestWithUser extends Request {
   user?: {
@@ -36,9 +38,13 @@ export class AuthController {
    * Returns access and refresh tokens
    */
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<{
+  async login(
+    @Body() loginDto: LoginDto,
+    @IpAddress() ipAddress?: string,
+  ): Promise<{
     accessToken: string;
     refreshToken: string;
+    mustChangePassword?: boolean;
   }> {
     const user = await this.authService.validateUser(
       loginDto.email,
@@ -50,7 +56,7 @@ export class AuthController {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    return this.authService.login(user);
+    return this.authService.login(user, ipAddress);
   }
 
   /**
@@ -72,12 +78,37 @@ export class AuthController {
    */
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  async logout(@Req() req: RequestWithUser): Promise<{ message: string }> {
+  async logout(
+    @Req() req: RequestWithUser,
+    @IpAddress() ipAddress?: string,
+  ): Promise<{ message: string }> {
     if (!req.user) {
       throw new UnauthorizedException('User not found');
     }
 
-    await this.authService.logout(req.user.userId);
+    await this.authService.logout(req.user.userId, ipAddress);
     return { message: 'Logged out successfully' };
+  }
+
+  /**
+   * POST /auth/change-password
+   * Change user password
+   * Requires JWT authentication
+   */
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Req() req: RequestWithUser,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    if (!req.user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return this.authService.changePassword(
+      req.user.userId,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword,
+    );
   }
 }

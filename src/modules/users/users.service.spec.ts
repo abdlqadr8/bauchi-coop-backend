@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -60,6 +64,63 @@ describe('UsersService', () => {
     it('should return a user', async () => {
       const result = await service.findById('123');
       expect(result).toEqual(mockUser);
+    });
+  });
+
+  describe('create', () => {
+    it('should prevent creating SYSTEM_ADMIN users', async () => {
+      await expect(
+        service.create({
+          email: 'admin@example.com',
+          password: 'password123',
+          firstName: 'Admin',
+          lastName: 'User',
+          role: 'SYSTEM_ADMIN',
+        }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('update', () => {
+    it('should prevent updating SYSTEM_ADMIN users', async () => {
+      const systemAdmin = { ...mockUser, role: 'SYSTEM_ADMIN' };
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(systemAdmin as any);
+
+      await expect(
+        service.update('123', { firstName: 'NewName' }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should prevent promoting users to SYSTEM_ADMIN', async () => {
+      await expect(
+        service.update('123', { role: 'SYSTEM_ADMIN' }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('updateStatus', () => {
+    it('should prevent changing SYSTEM_ADMIN status', async () => {
+      const systemAdmin = { ...mockUser, role: 'SYSTEM_ADMIN' };
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(systemAdmin as any);
+
+      await expect(service.updateStatus('123', 'INACTIVE')).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+  });
+
+  describe('delete', () => {
+    it('should prevent deleting SYSTEM_ADMIN users', async () => {
+      const systemAdmin = { ...mockUser, role: 'SYSTEM_ADMIN' };
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(systemAdmin as any);
+
+      await expect(service.delete('123')).rejects.toThrow(ForbiddenException);
     });
   });
 });

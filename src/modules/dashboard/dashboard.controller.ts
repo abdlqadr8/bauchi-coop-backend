@@ -9,7 +9,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
  */
 @Controller('api/v1/admin/dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('SYSTEM_ADMIN', 'ADMIN')
+@Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
@@ -65,7 +65,7 @@ export class DashboardController {
     Array<{
       id: string;
       cooperativeName: string;
-      applicationType: string;
+      registrationNumber: string | null;
       status: string;
       createdAt: Date;
     }>

@@ -8,6 +8,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { GenerateCertificateDto } from './dto/generate-certificate.dto';
 import { RevokeCertificateDto } from './dto/revoke-certificate.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 
 /**
  * Certificates Service
@@ -17,12 +18,18 @@ import { v4 as uuidv4 } from 'uuid';
 export class CertificatesService {
   private readonly logger = new Logger('CertificatesService');
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogsService: ActivityLogsService,
+  ) {}
 
   /**
    * Generate certificate for approved application
    */
-  async generate(dto: GenerateCertificateDto): Promise<{
+  async generate(
+    dto: GenerateCertificateDto,
+    generatedBy?: string,
+  ): Promise<{
     id: string;
     registrationNo: string;
     certificateUrl: string;
@@ -70,6 +77,18 @@ export class CertificatesService {
 
     this.logger.log(`Certificate generated: ${certificate.id}`);
 
+    // Log activity
+    await this.activityLogsService.logActivity({
+      userId: generatedBy,
+      applicationId: dto.applicationId,
+      action: 'GENERATE_CERTIFICATE',
+      description: `Generated certificate ${registrationNo} for application`,
+      metadata: {
+        certificateId: certificate.id,
+        registrationNo,
+      },
+    });
+
     return {
       id: certificate.id,
       registrationNo: certificate.registrationNo,
@@ -84,6 +103,7 @@ export class CertificatesService {
   async revoke(
     id: string,
     dto: RevokeCertificateDto,
+    revokedBy?: string,
   ): Promise<{
     id: string;
     registrationNo: string;
@@ -110,6 +130,19 @@ export class CertificatesService {
     });
 
     this.logger.log(`Certificate revoked: ${revoked.id}`);
+
+    // Log activity
+    await this.activityLogsService.logActivity({
+      userId: revokedBy,
+      applicationId: certificate.applicationId,
+      action: 'REVOKE_CERTIFICATE',
+      description: `Revoked certificate ${certificate.registrationNo}`,
+      metadata: {
+        certificateId: revoked.id,
+        registrationNo: revoked.registrationNo,
+        reason: dto.revocationReason,
+      },
+    });
 
     return {
       id: revoked.id,

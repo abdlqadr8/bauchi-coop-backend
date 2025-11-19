@@ -34,11 +34,11 @@ export class CertificatesController {
 
   /**
    * GET /admin/certificates
-   * List all certificates (admin)
+   * List all certificates (admin + staff view/download)
    */
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async findAll(
     @Query('skip') skip?: string,
     @Query('take') take?: string,

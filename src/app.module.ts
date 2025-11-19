@@ -13,6 +13,7 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { EmailModule } from './modules/email/email.module';
 import { FilesModule } from './modules/files/files.module';
+import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module';
 
 /**
  * Root application module.
@@ -56,6 +57,7 @@ import { FilesModule } from './modules/files/files.module';
     // Global service modules
     EmailModule,
     FilesModule,
+    ActivityLogsModule,
     // Feature modules
     AuthModule,
     UsersModule,

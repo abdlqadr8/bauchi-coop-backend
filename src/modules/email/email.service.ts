@@ -210,6 +210,40 @@ export class EmailService {
   }
 
   /**
+   * Send welcome email to new user with temporary password
+   */
+  async sendUserWelcomeEmail(
+    email: string,
+    firstName: string,
+    lastName: string,
+    temporaryPassword: string,
+    role: string,
+  ): Promise<void> {
+    try {
+      const payload = {
+        to: email,
+        subject: 'Welcome to Bauchi Cooperative Registry - Account Created',
+        template: 'user-welcome',
+        templateData: {
+          firstName,
+          lastName,
+          email,
+          temporaryPassword,
+          role,
+          loginUrl: `${this.configService.get('FRONTEND_URL')}/admin/login`,
+        },
+      };
+
+      await this.sendEmail(payload);
+      this.logger.log(`Welcome email sent to new user ${email}`);
+    } catch (error: any) {
+      this.logger.error(
+        `Failed to send welcome email: ${error?.message || 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
    * Internal method to send email via Mailjet
    */
   private async sendEmail(payload: EmailPayload): Promise<void> {
@@ -344,6 +378,40 @@ export class EmailService {
           <p><strong>Reason:</strong> ${d.reason}</p>
           <p>Please contact us at <a href="mailto:${d.contactEmail}">${d.contactEmail}</a> for more information.</p>
           <p>Best regards,<br/>Bauchi Cooperative Registry</p>
+        </div>
+      `,
+
+      'user-welcome': (d) => `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #28a745; margin-top: 0;">Welcome to Bauchi Cooperative Registry</h2>
+            <p>Dear ${d.firstName} ${d.lastName},</p>
+            <p>Your account has been successfully created. You can now access the Bauchi Cooperative Registry admin portal.</p>
+            
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+              <h3 style="margin-top: 0; color: #333;">Your Login Credentials</h3>
+              <p><strong>Email:</strong> ${d.email}</p>
+              <p><strong>Temporary Password:</strong> <code style="background-color: #e9ecef; padding: 5px 10px; border-radius: 3px; font-size: 14px;">${d.temporaryPassword}</code></p>
+              <p><strong>Role:</strong> ${d.role}</p>
+            </div>
+
+            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; color: #856404;"><strong>⚠️ Important Security Notice:</strong></p>
+              <p style="margin: 10px 0 0 0; color: #856404;">You will be required to change your password on first login for security purposes.</p>
+            </div>
+
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${d.loginUrl}" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Login to Your Account</a>
+            </p>
+
+            <p style="color: #666; font-size: 14px;">If you have any questions or need assistance, please contact our support team.</p>
+            
+            <p style="margin-top: 30px;">Best regards,<br/><strong>Bauchi Cooperative Registry Team</strong></p>
+          </div>
+          
+          <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
+            <p>This is an automated email. Please do not reply to this message.</p>
+          </div>
         </div>
       `,
     };

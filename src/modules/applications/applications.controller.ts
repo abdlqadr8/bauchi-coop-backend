@@ -34,11 +34,11 @@ export class ApplicationsAdminController {
 
   /**
    * GET /api/v1/admin/applications
-   * List all applications (admin)
+   * List all applications (admin + staff view)
    */
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async findAll(
     @Query('skip') skip?: string,
     @Query('take') take?: string,
@@ -64,11 +64,11 @@ export class ApplicationsAdminController {
 
   /**
    * GET /api/v1/admin/applications/:id
-   * Get application by ID with documents (admin)
+   * Get application by ID with documents (admin + staff view)
    */
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async findById(@Param('id') id: string): Promise<{
     id: string;
     cooperativeName: string;
@@ -123,7 +123,7 @@ export class ApplicationsAdminController {
    */
   @Get('stats/overview')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SYSTEM_ADMIN', 'ADMIN')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async getStats(): Promise<{
     total: number;
     new: number;

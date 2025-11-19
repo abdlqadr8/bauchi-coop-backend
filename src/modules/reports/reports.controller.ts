@@ -9,7 +9,6 @@ import { Roles } from '../auth/decorators/roles.decorator';
  */
 @Controller('api/v1/admin/reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('SYSTEM_ADMIN', 'ADMIN')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
@@ -18,6 +17,7 @@ export class ReportsController {
    * Get applications summary
    */
   @Get('applications')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async getApplicationSummary(): Promise<{
     total: number;
     byStatus: Array<{ status: string; count: number }>;
@@ -30,6 +30,7 @@ export class ReportsController {
    * Get payments summary
    */
   @Get('payments')
+  @Roles('SYSTEM_ADMIN', 'ADMIN', 'STAFF')
   async getPaymentSummary(): Promise<{
     totalRevenue: number;
     totalTransactions: number;
@@ -40,9 +41,10 @@ export class ReportsController {
 
   /**
    * GET /admin/reports/users
-   * Get user activity summary
+   * Get user activity summary (admin only)
    */
   @Get('users')
+  @Roles('SYSTEM_ADMIN', 'ADMIN')
   async getUserActivity(): Promise<{
     totalUsers: number;
     activeUsers: number;

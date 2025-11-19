@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, MinLength, IsOptional } from "class-validator";
+import { IsEmail, IsNotEmpty, MinLength, IsOptional } from 'class-validator';
 
 /**
  * DTO for creating a user
@@ -7,9 +7,9 @@ export class CreateUserDto {
   @IsEmail()
   email!: string;
 
-  @IsNotEmpty()
-  @MinLength(6)
-  password!: string;
+  @IsOptional()
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  password?: string; // Optional - will be auto-generated if not provided
 
   @IsNotEmpty()
   firstName!: string;

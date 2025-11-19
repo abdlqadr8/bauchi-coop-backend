@@ -11,6 +11,7 @@ import { SubmitApplicationDto } from './dto/submit-application.dto';
 import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 import { EmailService } from '../email/email.service';
 import { AdminPaymentApprovalService } from '../payments/admin-payment-approval.service';
+import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 
 /**
  * Applications Service
@@ -25,6 +26,7 @@ export class ApplicationsService {
     private readonly cloudinaryService: CloudinaryService,
     private readonly emailService: EmailService,
     private readonly approvalService: AdminPaymentApprovalService,
+    private readonly activityLogsService: ActivityLogsService,
   ) {}
 
   /**
@@ -106,6 +108,18 @@ export class ApplicationsService {
       this.logger.log(
         `Application submitted: ${application.id} (${dto.cooperativeName})`,
       );
+
+      // Log activity
+      await this.activityLogsService.logActivity({
+        applicationId: application.id,
+        action: 'SUBMIT_APPLICATION',
+        description: `New application submitted: ${dto.cooperativeName}`,
+        metadata: {
+          email: application.email,
+          phone: application.phone,
+          documentsCount: dto.documents?.length || 0,
+        },
+      });
 
       return {
         id: application.id,
@@ -363,6 +377,19 @@ export class ApplicationsService {
     this.logger.log(
       `Application ${id} status updated to ${dto.status} by ${reviewedByUserId || 'system'}`,
     );
+
+    // Log activity
+    await this.activityLogsService.logActivity({
+      userId: reviewedByUserId,
+      applicationId: id,
+      action: 'UPDATE_APPLICATION_STATUS',
+      description: `Changed application ${application.cooperativeName} status from ${application.status} to ${dto.status}`,
+      metadata: {
+        previousStatus: application.status,
+        newStatus: dto.status,
+        notes: dto.notes,
+      },
+    });
 
     return updated;
   }

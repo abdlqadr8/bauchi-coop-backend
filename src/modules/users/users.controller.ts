@@ -8,6 +8,7 @@ import {
   Body,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +16,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+
+interface RequestWithUser extends Request {
+  user?: {
+    userId: string;
+    email: string;
+    role: string;
+  };
+}
 
 /**
  * Users Controller
@@ -77,7 +86,10 @@ export class UsersController {
    * Create new user
    */
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<{
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @Req() req: RequestWithUser,
+  ): Promise<{
     id: string;
     email: string;
     firstName: string;
@@ -86,7 +98,7 @@ export class UsersController {
     status: string;
     createdAt: Date;
   }> {
-    return this.usersService.create(createUserDto);
+    return this.usersService.create(createUserDto, req.user?.userId);
   }
 
   /**
@@ -97,6 +109,7 @@ export class UsersController {
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: RequestWithUser,
   ): Promise<{
     id: string;
     email: string;
@@ -106,7 +119,7 @@ export class UsersController {
     status: string;
     updatedAt: Date;
   }> {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.update(id, updateUserDto, req.user?.userId);
   }
 
   /**
@@ -117,8 +130,9 @@ export class UsersController {
   async updateStatus(
     @Param('id') id: string,
     @Body() { status }: { status: string },
+    @Req() req: RequestWithUser,
   ): Promise<{ id: string; email: string; status: string }> {
-    return this.usersService.updateStatus(id, status);
+    return this.usersService.updateStatus(id, status, req.user?.userId);
   }
 
   /**
@@ -128,7 +142,8 @@ export class UsersController {
   @Delete(':id')
   async delete(
     @Param('id') id: string,
+    @Req() req: RequestWithUser,
   ): Promise<{ id: string; email: string }> {
-    return this.usersService.delete(id);
+    return this.usersService.delete(id, req.user?.userId);
   }
 }
